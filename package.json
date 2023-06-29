@@ -2,7 +2,7 @@
   "name": "console-1",
   "version": "1.0.0",
   "description": "",
-  "main": "cmd.js",
+  "main": "date.js",
   "bin": {
     "get-date": "./date.js"
   },
@@ -10,7 +10,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "",
+  "author": "toha62",
   "license": "ISC",
   "dependencies": {
     "yargs": "^17.7.2"
