@@ -2,13 +2,11 @@
 const yargs = require('yargs/yargs');
 const { hideBin } = require('yargs/helpers');
 
-const date = new Date();
 const month = ['Jan', 'Feb', 'Mar', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 const current = (argv) => {
-  console.log('type current');
-  console.log(argv);
-
+  const date = new Date();
+  
   if (argv.d) {
     console.log(date.getDate());
   }
@@ -23,45 +21,91 @@ const current = (argv) => {
   } 
 }
 
-const sub = () => {
-  console.log('type sub')
+const getShiftedDate = (argv, sign = 1) => {
+  const date = new Date();
+  
+  if (argv.d) {
+    date.setDate(date.getDate() + argv.d * sign);
+  }
+  if (argv.m) {
+    date.setMonth(date.getMonth() + argv.m * sign);
+  }
+  if (argv.y) {
+    date.setFullYear(date.getFullYear() + argv.y * sign);
+  }
+  
+  return date.toISOString();
 }
 
-const add = () => {
-  console.log('type add')
+const sub = (argv) => {  
+  console.log(getShiftedDate(argv, -1));
 }
+
+const add = (argv) => {
+  console.log(getShiftedDate(argv));
+}
+
+const optionsCurrent = (yargs) => {
+  return yargs
+    .option('years', {
+      alias: 'y',
+      type: 'boolean',
+      describe: 'current year'
+    })
+    .option('month', {
+      alias: 'm',
+      type: 'boolean',
+      description: 'current month'
+    })
+    .option('date', {
+      alias: 'd',
+      type: 'boolean',
+      description: 'current date'        
+    })
+};
+
+const optionsAddSub = (yargs) => {
+  return yargs
+    .option('years', {
+      alias: 'y',
+      type: 'number',
+      nargs: 1,
+      describe: 'count of year to shift'
+    })
+    .option('month', {
+      alias: 'm',
+      type: 'number',
+      nargs: 1,
+      description: 'count of month to shift'
+    })
+    .option('date', {
+      alias: 'd',
+      type: 'number',
+      nargs: 1,
+      description: 'count of date to shift'        
+    })
+};
 
 const argv = yargs(hideBin(process.argv))
   .command(
     'current',
     'current date and time in ISO',
-    (yargs) => {
-      return yargs
-        .option('years', {
-          alias: 'y',
-          type: 'boolean',
-          describe: 'current year'
-        })
-        .option('month', {
-          alias: 'm',
-          type: 'boolean',
-          description: 'current month'
-        })
-        .option('date', {
-          alias: 'd',
-          type: 'boolean',
-          description: 'current date'        
-        })
-    },
-    (argv) => current(argv)
+    optionsCurrent,
+    current
   )
-  .command('sub', 'date, time in past', () => {}, sub)
-  .command('add', 'date, time in future', () => {}, add)
+  .command(
+    'sub',
+    'date, time in past',
+    optionsAddSub,
+    sub
+  )
+  .command(
+    'add',
+    'date, time in future',
+    optionsAddSub,
+    add
+  )
   .demandCommand(1, 1, 'choose a command: current, add or sub')
   .strict()
   .help('h')
   .argv;
-
-// console.log(argv)
-
-// console.log('Hello! ', date);
